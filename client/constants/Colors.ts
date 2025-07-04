@@ -1,4 +1,5 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Background } from '@react-navigation/elements';
 
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
@@ -6,8 +7,10 @@ const tintColorDark = '#fff';
 export const Colors = {
   light: {
     text: '#11181C',
-    background: '#fff',
-    safeAreaBg:'rgb(214, 214, 214)',
+    safeAreaBg: '#fff',
+    background: 'rgb(250,250,250)',
+    // background: '#fff',
+    // safeAreaBg:'rgb(214, 214, 214)',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
@@ -15,8 +18,10 @@ export const Colors = {
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
-    safeAreaBg: 'rgb(22, 22, 22)',
+    safeAreaBg: '#000',
+    background: 'rgb(22, 22, 22)',
+    // background: '#000',
+    // safeAreaBg: 'rgb(22, 22, 22)',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',

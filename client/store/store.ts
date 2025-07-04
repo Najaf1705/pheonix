@@ -1,21 +1,29 @@
 import {create} from "zustand";
 
-type CounterStore={
-    count: number;
-    increment: ()=>void;
-    decrement: ()=>void;
-    isLoggedIn?: boolean;
-    setLoginStatus?: (status: boolean) => void;
+type Shipment={
+    id: string;
+    date: string;
+    status: string;
+    quantity: number;
 }
 
-export const useCounterStore=create<CounterStore>((set)=>({
+type User={
+    name: string;
+    email:string;
+    shipments: Shipment[];
+}
+
+type Store={
+    user: User|null;
+    setUser: (user: User|null)=>void;
+    isLoggedIn: boolean;
+    setLoginStatus: (status: boolean)=>void;
+
+}
+
+export const userStore=create<Store>((set)=>({
+    user: null,
+    setUser: (user: User|null)=>set({user}),
     isLoggedIn: false,
-    setLoginStatus: (status: boolean) => set({isLoggedIn: status}),
-    count: 0,
-    increment: ()=>{
-        set(state=>({count: state.count+1}))
-    },
-    decrement: ()=>{
-        set(state=>({count: state.count-1}))
-    },
-}));
+    setLoginStatus: (status: boolean)=>set({isLoggedIn: status})
+}))

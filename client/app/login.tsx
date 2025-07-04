@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { useCounterStore } from '@/store/store'
+import { userStore } from '@/store/store'
 import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from 'react-native'
 import { ThemedView } from '@/components/ThemedView'
 import { ThemedText } from '@/components/ThemedText'
@@ -11,14 +11,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 const login = () => {
 
-    const { setLoginStatus } = useCounterStore();
+    const { setLoginStatus, setUser } = userStore();
     const router = useRouter();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
 
     const loginSchema = z.object({
-        email: z.string().email(),
-        password: z.string().min(8, "Atleast 8 characters required")
+        // name: z.string().min(3),
+        email: z.string(),
+        password: z.string(),
     })
 
     type LoginSchema = z.infer<typeof loginSchema>;
@@ -32,14 +33,42 @@ const login = () => {
         resolver: zodResolver(loginSchema),
     });
 
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const submit = async (data: LoginSchema) => {
-        console.log(data);
-        console.log("Email: ", data.email);
-        console.log("Password: ", data.password);
-        await new Promise(res => setTimeout(res, 2000));
-        reset();
-        // router.replace('/(tabs)')
+        setErrorMsg(null);
+        try {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/userEntry`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: " ",
+                    email: data.email,
+                    password: data.password
+                })
+            })
+            console.log("response", response);
+            const res = await response.json();
+
+            if (response.ok) {
+                console.log(res.message);
+                reset();
+                setUser(res.data);
+                router.replace('/(tabs)')
+            } else {
+                if (res.message === "Password does not match") {
+                    setErrorMsg("Wrong password");
+                } else {
+                    setErrorMsg("Invalid credentials");
+                }
+                console.log(res.message);
+            }
+        } catch (error) {
+            setErrorMsg("Network error");
+            console.log(error);
+        }
     }
 
     if (!setLoginStatus) return null;
@@ -52,13 +81,36 @@ const login = () => {
                     Login
                 </ThemedText>
                 <View className='w-full'>
+                    {/* <ThemedText className='mt-2'>Name</ThemedText>
+                    <Controller
+                        name='name'
+                        control={control}
+                        render={({ field: { value, onChange, onBlur } }) => (
+                            <TextInput
+                                autoFocus={true}
+                                inputMode='text'
+                                placeholder="Enter Name"
+                                className={`${isDark ? "text-white" : "text-black"} border border-gray-500 mt-1 rounded-sm`}
+                                placeholderTextColor={colorScheme === 'dark' ? 'grey' : 'grey'}
+                                value={value}
+                                onChangeText={onChange}
+                                onBlur={onBlur}
+                                editable={!isSubmitting}
+                            />
+                        )}
+                    />
+                    {errors.name && typeof errors.name.message === 'string' &&
+                        <Text className='text-red-500 mt-2'>
+                            {errors.name.message}
+                        </Text>
+                    } */}
+
                     <ThemedText className='mt-2'>Email</ThemedText>
                     <Controller
                         name='email'
                         control={control}
                         render={({ field: { value, onChange, onBlur } }) => (
                             <TextInput
-                                autoFocus={true}
                                 inputMode='email'
                                 placeholder="Enter Email"
                                 className={`${isDark ? "text-white" : "text-black"} border border-gray-500 mt-1 rounded-sm`}
@@ -101,6 +153,11 @@ const login = () => {
                     }
 
                 </View>
+                {errorMsg && (
+                    <Text className='text-red-500 mt-2'>
+                        {errorMsg}
+                    </Text>
+                )}
                 <TouchableOpacity
                     className={`mt-4 w-1/2 h-12 flex items-center justify-center rounded-md ${isSubmitting ? "bg-green-400/20" : "bg-green-400"}`}
                     onPress={handleSubmit(submit)}

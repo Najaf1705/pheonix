@@ -2,14 +2,14 @@ import React from 'react';
 import { Redirect } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { Text as DefaultText, TextProps, View } from 'react-native';
-import { useCounterStore } from '@/store/store';
+import { userStore } from '@/store/store';
 
 const Text: React.FC<TextProps> = ({ style, ...props }) => {
   return <DefaultText style={[{ fontFamily: 'SpaceMono' }, style]} {...props} />;
 };
 
 const StartPage = () => {
-  const { isLoggedIn } = useCounterStore();
+  const { isLoggedIn } = userStore();
 
   console.log(isLoggedIn);
 
