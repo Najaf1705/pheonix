@@ -9,5 +9,6 @@ router.get('/authRouteTest', (req,res)=>{
 
 router.post('/userEntry', authController.userEntry);
 router.patch('/addUserName', authController.addUserName);
+router.get('/me', authController.me);
 
 module.exports=router;

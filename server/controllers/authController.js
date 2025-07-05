@@ -61,7 +61,27 @@ const addUserName=async(req, res)=> {
     }
 }
 
+const me=async(req, res)=> {
+    try {
+        const email=req.query.email;
+        console.log("me ",email);
+        const user = await User.findOne({email});
+        res.status(200).json({
+            message: "User found",
+            data: {
+                name: user.name,
+                email: user.email,
+                shipments: user.shipments
+            }
+        });
+    } catch (error) {
+        console.error("Error in me:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 module.exports={
     userEntry,
-    addUserName
+    addUserName,
+    me
 };
