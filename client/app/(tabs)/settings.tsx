@@ -3,11 +3,14 @@ import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { TextInput, TouchableOpacity } from 'react-native'
 import { userStore } from '@/store/store'
+import { useRouter } from 'expo-router'
+import storage from '@/storage/storage'
 
 const Settings = () => {
   const { user, setUser } = userStore();
   const [name, setName] = useState(user?.name ?? '');
   const [editing, setEditing] = useState(!user?.name);
+  const router=useRouter();
 
   const handleSave = async () => {
     if (name.trim()) {
@@ -32,7 +35,15 @@ const Settings = () => {
         })
         console.log("response", response);
         if (response.ok) {
+          storage.save({
+            key: 'user',
+            data: {
+              ...user,
+              name: name
+            }
+          })
           console.log('User name updated successfully');
+          router.replace('/(tabs)');
         }
       } catch (error) {
         console.error('Error updating user name:', error);

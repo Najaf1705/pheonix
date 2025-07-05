@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { userStore } from '@/store/store'
-import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from 'react-native'
+import { Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
+import storage from '@/storage/storage'
 import { ThemedView } from '@/components/ThemedView'
 import { ThemedText } from '@/components/ThemedText'
 import { useColorScheme } from '@/hooks/useColorScheme.web'
@@ -56,6 +57,18 @@ const login = () => {
                 console.log(res.message);
                 reset();
                 setUser(res.data);
+                await storage.save({
+                    key: 'user',
+                    data: res.data,
+                    expires: null,
+                });
+
+                await storage.save({
+                    key: 'isLoggedIn',
+                    data: true,
+                    expires: null,
+                });
+        
                 router.replace('/(tabs)')
             } else {
                 if (res.message === "Password does not match") {
@@ -81,30 +94,6 @@ const login = () => {
                     Login
                 </ThemedText>
                 <View className='w-full'>
-                    {/* <ThemedText className='mt-2'>Name</ThemedText>
-                    <Controller
-                        name='name'
-                        control={control}
-                        render={({ field: { value, onChange, onBlur } }) => (
-                            <TextInput
-                                autoFocus={true}
-                                inputMode='text'
-                                placeholder="Enter Name"
-                                className={`${isDark ? "text-white" : "text-black"} border border-gray-500 mt-1 rounded-sm`}
-                                placeholderTextColor={colorScheme === 'dark' ? 'grey' : 'grey'}
-                                value={value}
-                                onChangeText={onChange}
-                                onBlur={onBlur}
-                                editable={!isSubmitting}
-                            />
-                        )}
-                    />
-                    {errors.name && typeof errors.name.message === 'string' &&
-                        <Text className='text-red-500 mt-2'>
-                            {errors.name.message}
-                        </Text>
-                    } */}
-
                     <ThemedText className='mt-2'>Email</ThemedText>
                     <Controller
                         name='email'
@@ -163,7 +152,11 @@ const login = () => {
                     onPress={handleSubmit(submit)}
                     disabled={isSubmitting}
                 >
-                    <Text className="text-black text-center font-bold text-xl">Login</Text>
+                    <Text className="text-black text-center font-bold text-xl">
+                        {isSubmitting ?
+                            <ActivityIndicator />
+                            : "Login"}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>

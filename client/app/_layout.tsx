@@ -9,13 +9,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColors } from '@/constants/Colors';
 import { userStore } from '@/store/store';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import storage from '@/storage/storage'
 
 const queryClient=new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const colors = useColors();
-  const { isLoggedIn } = userStore();
+  const isLoggedIn=storage.load({key: 'isLoggedIn'});
+  console.log(isLoggedIn);
 
   return (
     <QueryClientProvider client={queryClient}>

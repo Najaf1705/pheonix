@@ -5,6 +5,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { router } from 'expo-router';
 import { useColors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
+import storage from '@/storage/storage'
+
 
 interface HeaderProps {
     title: string;
@@ -14,6 +16,12 @@ interface HeaderProps {
 export default function Header({ title }: HeaderProps) {
     const colors = useColors();
     const router=useRouter();
+
+    const logout=async()=>{
+        await storage.remove({key: 'user'});
+        await storage.remove({key: 'isLoggedIn'});
+        router.replace('/login');
+    }
 
     return (
         <ThemedView style={[{}]}>
@@ -26,7 +34,7 @@ export default function Header({ title }: HeaderProps) {
                 <TouchableOpacity className='flex justify-center bg-indigo-300 rounded'>
                     <Text
                         className='mx-2 font-bold'
-                        onPress={()=>router.replace('/login')}
+                        onPress={logout}
                     >
                         Logout
                     </Text>
